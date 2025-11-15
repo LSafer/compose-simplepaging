@@ -1,0 +1,27 @@
+[versions]
+kotlin = "2.2.0"
+kotlinx-serialization = "1.9.0"
+kotlinx-atomicfu = "0.29.0"
+
+compose = "1.8.2"
+
+# ANDROID
+agp = "8.11.0"
+android-compileSdk = "36"
+android-minSdk = "24"
+android-targetSdk = "36"
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "kotlinx-atomicfu" }
+
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+android-library = { id = "com.android.library", version.ref = "agp" }
+
+vanniktech-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }
+
+[libraries]
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
