@@ -1,6 +1,11 @@
+@file:JvmMultifileClass
+@file:JvmName("ExtensionsKt")
+
 package net.lsafer.compose.simplepaging
 
 import net.lsafer.compose.simplepaging.internal.ceilDiv
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 
 // ========== query.search ========== //
 

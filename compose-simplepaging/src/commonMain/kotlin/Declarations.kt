@@ -48,3 +48,11 @@ data class PagingState<T, S>(
     val result: PageResult<T> = PageResult(),
     val isStale: Boolean = false,
 )
+
+@Serializable
+data class ChunkingState<S>(
+    val search: S? = null,
+    val nextItemCount: ULong? = null,
+    val nextRef: PageRef = PageRef(),
+    val isStale: Boolean = false,
+)
