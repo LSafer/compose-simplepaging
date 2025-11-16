@@ -69,23 +69,23 @@ class Chunking<T, S>(private val fetcher: Fetcher<T, S>) {
     val errors = mutableStateListOf<Throwable>()
 
     /**
-     * Loads the first chunk of items for the given [search] value.
+     * Loads the first chunk of items for the given [newSearch] value.
      *
      * NOTE: the functions [fetch] and [fetchMore] are guarded by a single non-reentrant [Mutex].
      *
      * When [fetch] is called, the current search will be changed
-     * to [search] regardless if the function succeeded or failed.
+     * to [newSearch] regardless if the function succeeded or failed.
      *
      * When successful, clears the current [items] and replaces
      * them with the resultant items.
      *
-     * @param search the search value to fetch items for.
+     * @param newSearch the search value to fetch items for.
      * @param limit the maximum number of items to fetch in this chunk.
      * @return true if the fetch succeeded; false if the fetch failed.
      */
-    suspend fun fetch(search: S? = state.search, limit: UInt = 24u): Boolean = mutex.withLock {
+    suspend fun fetch(newSearch: S? = state.search, limit: UInt = 24u): Boolean = mutex.withLock {
         val fetchQuery = PageQuery(
-            search = search,
+            search = newSearch,
             pageSize = limit,
             ref = PageRef(),
         )

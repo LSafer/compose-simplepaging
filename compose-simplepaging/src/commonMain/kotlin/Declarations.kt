@@ -49,6 +49,12 @@ data class PagingState<T, S>(
     val isStale: Boolean = false,
 )
 
+/**
+ * An immutable object containing a particular state of a chunking class.
+ *
+ * @param search the last search that is being fetched by the user.
+ * @param isStale true, indicating that the chunking items didn't result from [search].
+ */
 @Serializable
 data class ChunkingState<S>(
     val search: S? = null,
