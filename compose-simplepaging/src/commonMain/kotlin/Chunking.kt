@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.Serializable
 import net.lsafer.compose.simplepaging.internal.throwIfFatal
 
 /**
@@ -22,7 +23,7 @@ import net.lsafer.compose.simplepaging.internal.throwIfFatal
  * but will queue sequentially unless the caller debounce or cancel them.
  *
  * State is exposed via [state] and items via [items]. All updates replace
- * the old state with a new [ChunkingState] snapshot.
+ * the old state with a new [State] snapshot.
  *
  * Data loading is done via the provided [fetcher]. Use [fetch] to load the
  * first chunk for a search value, and [fetchMore] to append additional items.
@@ -55,9 +56,23 @@ class Chunking<T, S>(private val fetcher: Fetcher<T, S>) {
      */
     typealias Fetcher<T, S> = suspend (PageQuery<S>) -> PageResult<T>?
 
+    /**
+     * An immutable object containing a particular chunking state.
+     *
+     * @param search the last search that is being fetched by the user.
+     * @param isStale true, indicating that the chunking items didn't result from [search].
+     */
+    @Serializable
+    data class State<S>(
+        val search: S? = null,
+        val nextItemCount: ULong? = null,
+        val nextRef: PageRef = PageRef(),
+        val isStale: Boolean = false,
+    )
+
     private val mutex = Mutex()
 
-    var state by mutableStateOf(ChunkingState<S>())
+    var state by mutableStateOf(State<S>())
         private set
 
     private val _items = mutableStateListOf<T>()
@@ -90,7 +105,7 @@ class Chunking<T, S>(private val fetcher: Fetcher<T, S>) {
             ref = PageRef(),
         )
 
-        this.state = ChunkingState(
+        this.state = State(
             search = fetchQuery.search,
             nextItemCount = null,
             nextRef = fetchQuery.ref,
@@ -110,7 +125,7 @@ class Chunking<T, S>(private val fetcher: Fetcher<T, S>) {
 
         this._items.clear()
         this._items += fetchResult.items
-        this.state = ChunkingState(
+        this.state = State(
             search = fetchQuery.search,
             nextItemCount = fetchResult.nextItemCount,
             nextRef = fetchResult.nextRef,
@@ -153,7 +168,7 @@ class Chunking<T, S>(private val fetcher: Fetcher<T, S>) {
         if (wasStale)
             this._items.clear()
         this._items += fetchResult.items
-        this.state = ChunkingState(
+        this.state = State(
             search = fetchQuery.search,
             nextItemCount = fetchResult.nextItemCount,
             nextRef = fetchResult.nextRef,

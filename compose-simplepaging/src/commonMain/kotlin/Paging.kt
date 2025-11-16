@@ -3,6 +3,7 @@ package net.lsafer.compose.simplepaging
 import androidx.compose.runtime.*
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
+import kotlinx.serialization.Serializable
 import net.lsafer.compose.simplepaging.internal.throwIfFatal
 
 /**
@@ -10,7 +11,7 @@ import net.lsafer.compose.simplepaging.internal.throwIfFatal
  * state, and errors.
  *
  * State is immutable and exposed via [state]. All updates  to the query or
- * results produce a new [PagingState] snapshot.
+ * results produce a new [State] snapshot.
  *
  * Fetching is done via the provided [fetcher]. Call [fetch] to load data
  * for the current or transformed query.
@@ -43,9 +44,23 @@ class Paging<T, S>(private val fetcher: Fetcher<T, S>) {
      */
     typealias Fetcher<T, S> = suspend (PageQuery<S>) -> PageResult<T>?
 
+    /**
+     * An immutable object containing a particular paging state.
+     *
+     * @param query the current targeted page by the user.
+     * @param result the result of the last fetch.
+     * @param isStale true, indicating that [result] didn't result from [query].
+     */
+    @Serializable
+    data class State<T, S>(
+        val query: PageQuery<S> = PageQuery(),
+        val result: PageResult<T> = PageResult(),
+        val isStale: Boolean = false,
+    )
+
     private val lock = SynchronizedObject()
 
-    var state by mutableStateOf(PagingState<T, S>())
+    var state by mutableStateOf(State<T, S>())
         private set
 
     private var _isLoading by mutableStateOf(0)
@@ -61,13 +76,13 @@ class Paging<T, S>(private val fetcher: Fetcher<T, S>) {
     /**
      * Atomically transforms the current query using the given function.
      */
-    fun editQuery(transform: (PagingState<T, S>) -> PageQuery<S>) {
+    fun editQuery(transform: (State<T, S>) -> PageQuery<S>) {
         synchronized(this.lock) {
             val currentState = this.state
             val newQuery = transform(currentState)
 
             if (newQuery != currentState.query) {
-                this.state = PagingState(
+                this.state = State(
                     query = newQuery,
                     result = currentState.result,
                     isStale = true,
@@ -89,13 +104,13 @@ class Paging<T, S>(private val fetcher: Fetcher<T, S>) {
      *
      * @return true if the fetch succeeded or the query was changed, false if the fetch failed.
      */
-    suspend fun fetch(transform: (PagingState<T, S>) -> PageQuery<S> = { it.query }): Boolean {
+    suspend fun fetch(transform: (State<T, S>) -> PageQuery<S> = { it.query }): Boolean {
         val fetchQuery = synchronized(this.lock) {
             val currentState = this.state
             val newQuery = transform(currentState)
 
             if (newQuery != currentState.query) {
-                this.state = PagingState(
+                this.state = State(
                     query = newQuery,
                     result = currentState.result,
                     isStale = true,
@@ -125,7 +140,7 @@ class Paging<T, S>(private val fetcher: Fetcher<T, S>) {
             val currentState = this.state
 
             if (fetchQuery == currentState.query) {
-                this.state = PagingState(
+                this.state = State(
                     query = fetchQuery,
                     result = fetchResult,
                     isStale = false,

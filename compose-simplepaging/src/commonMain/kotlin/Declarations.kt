@@ -34,31 +34,3 @@ data class PageResult<T>(
     val nextItemCount: ULong? = null,
     val nextRef: PageRef = PageRef(),
 )
-
-/**
- * An immutable object containing a particular state of a paging class.
- *
- * @param query the current targeted page by the user.
- * @param result the result of the last fetch.
- * @param isStale true, indicating that [result] didn't result from [query].
- */
-@Serializable
-data class PagingState<T, S>(
-    val query: PageQuery<S> = PageQuery(),
-    val result: PageResult<T> = PageResult(),
-    val isStale: Boolean = false,
-)
-
-/**
- * An immutable object containing a particular state of a chunking class.
- *
- * @param search the last search that is being fetched by the user.
- * @param isStale true, indicating that the chunking items didn't result from [search].
- */
-@Serializable
-data class ChunkingState<S>(
-    val search: S? = null,
-    val nextItemCount: ULong? = null,
-    val nextRef: PageRef = PageRef(),
-    val isStale: Boolean = false,
-)
