@@ -35,7 +35,14 @@ import net.lsafer.compose.simplepaging.internal.throwIfFatal
  * 3. Call [fetch] whenever the query changes or a refresh is desired.
  * 4. Use the Boolean result if you need to know whether the caller should retry.
  */
-class Paging<T, S>(private val fetcher: PagingFetcher<T, S>) {
+class Paging<T, S>(private val fetcher: Fetcher<T, S>) {
+    /**
+     * Type alias for a suspend function that fetches
+     * a page of items given a query or returns null
+     * on failure.
+     */
+    typealias Fetcher<T, S> = suspend (PageQuery<S>) -> PageResult<T>?
+
     private val lock = SynchronizedObject()
 
     var state by mutableStateOf(PagingState<T, S>())

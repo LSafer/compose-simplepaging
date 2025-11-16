@@ -15,6 +15,9 @@ plugins {
 group = "net.lsafer.compose-simplepaging"
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xnested-type-aliases")
+    }
     androidTarget {
         publishLibraryVariants("release")
         @OptIn(ExperimentalKotlinGradlePluginApi::class)

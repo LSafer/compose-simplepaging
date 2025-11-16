@@ -48,10 +48,3 @@ data class PagingState<T, S>(
     val result: PageResult<T> = PageResult(),
     val isStale: Boolean = false,
 )
-
-/**
- * Type alias for a suspend function that fetches
- * a page of items given a query or returns null
- * on failure.
- */
-typealias PagingFetcher<T, S> = suspend (PageQuery<S>) -> PageResult<T>?
