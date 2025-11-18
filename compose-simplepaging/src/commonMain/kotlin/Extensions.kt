@@ -59,6 +59,11 @@ fun Paging<*, *>.advanceTo(pageRef: PageRef) =
 fun Paging<*, *>.advanceTo(cursor: String? = null, offset: ULong? = null) =
     editQuery { it.query.copy(ref = PageRef(cursor, offset)) }
 
+// ========== STATE ========== //
+
+val Paging<*, *>.isLoadingOrStale: Boolean
+    get() = isLoading || state.isStale
+
 // ========== RESULT ========== //
 
 inline val <T> Paging<T, *>.items: List<T>

@@ -6,6 +6,11 @@ package net.lsafer.compose.simplepaging
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
+// ========== STATE ========== //
+
+val Chunking<*, *>.isLoadingOrStale: Boolean
+    get() = isLoading || state.isStale
+
 // ========== RESULT ========== //
 
 inline val Chunking<*, *>.nextItemCount: ULong?
