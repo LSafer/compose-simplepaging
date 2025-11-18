@@ -55,7 +55,7 @@ class Paging<T, S>(private val fetcher: Fetcher<T, S>) {
     data class State<T, S>(
         val query: PageQuery<S> = PageQuery(),
         val result: PageResult<T> = PageResult(),
-        val isStale: Boolean = false,
+        val isStale: Boolean = true,
     )
 
     private val lock = SynchronizedObject()

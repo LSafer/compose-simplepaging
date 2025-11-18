@@ -67,7 +67,7 @@ class Chunking<T, S>(private val fetcher: Fetcher<T, S>) {
         val search: S? = null,
         val nextItemCount: ULong? = null,
         val nextRef: PageRef = PageRef(),
-        val isStale: Boolean = false,
+        val isStale: Boolean = true,
     )
 
     private val mutex = Mutex()
